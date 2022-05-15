@@ -3,12 +3,24 @@ const trAPI = require('@vitalets/google-translate-api');
 const axios = require('axios');
 const fs = require('fs');
 
+Number.prototype.padLeft = function (base, chr) {
+    var len = (String(base || 10).length - String(this).length) + 1;
+    return len > 0 ? new Array(len).join(chr || '0') + this : this;
+}
+
+function logger(text) {
+    const d = new Date,
+        dformat = [d.getDate().padLeft(),(d.getMonth() + 1).padLeft(),  d.getFullYear()].join('/') + ' ' +
+                  [d.getHours().padLeft(), d.getMinutes().padLeft(), d.getSeconds().padLeft()].join(':');
+    return console.log(`[${dformat}] ${text}`)
+}
+
 async function translate(text) {
     let text2;
     try {
         text2 = await trAPI(text, { from: 'en', to: "id", autoCorrect: true }).text;
     } catch (e) {
-        console.log("Failed to translate")
+       logger("Failed to translate")
     } finally {
         return text2;
     }
@@ -23,8 +35,8 @@ async function getYechen(url) {
     const title = $(".entry-title").text();
     const text = $('div.entry-content').find('p').toArray().map(p => $(p).text()).join("\n");
 
-    console.log(title);
-    console.log(text);
+    logger(title);
+    logger(text);
     return { title, text };
     // translate(text, "id").then(res => console.log(res));
 }
@@ -40,7 +52,7 @@ async function checkNewYechen() {
     const $ = cheerio.load(response);
     // console.log({ response });
     const newLink = $('div.nav-next').find('a').attr('href')
-    console.log("New Link =", newLink);
+    logger("New Link ="+ newLink);
     if (newLink) {
         await writeLinkToFile(newLink);
         return newLink;
@@ -50,7 +62,7 @@ async function checkNewYechen() {
 async function writeLinkToFile(text) {
     fs.writeFile('yechen.txt', text, function (err) {
         if (err) return console.log(err);
-        console.log(text + '>yechen.txt');
+        logger(text + '>yechen.txt');
     })
 }
 
@@ -58,7 +70,7 @@ async function readLinkFromFile() {
     let read
     try {
         read = fs.readFileSync('yechen.txt')
-        console.log(read.toString());
+       logger(read.toString());
     } catch (err) {
         console.err
     } finally {
@@ -81,4 +93,4 @@ async function readLinkFromFile() {
 
 // checkNewYechen("https://avnovel.com/amazing-son-in-law-chen-chapter-4344/")
 
-module.exports = { getYechen, checkNewYechen, translate };
+module.exports = { getYechen, checkNewYechen, logger };
