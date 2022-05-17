@@ -35,8 +35,8 @@ async function getYechen(url) {
     const title = $(".entry-title").text();
     const text = $('div.entry-content').find('p').toArray().map(p => $(p).text()).join("\n");
 
-    logger(title);
-    logger(text);
+    // logger(title);
+    // logger(text);
     return { title, text };
     // translate(text, "id").then(res => console.log(res));
 }
@@ -53,10 +53,11 @@ async function checkNewYechen() {
     // console.log({ response });
     const newLink = $('div.nav-next').find('a').attr('href')
     logger("New Link ="+ newLink);
-    if (newLink) {
+    if (newLink!== undefined)  {
         await writeLinkToFile(newLink);
         return newLink;
     }
+    return false;
 }
 
 async function writeLinkToFile(text) {

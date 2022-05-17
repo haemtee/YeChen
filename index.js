@@ -19,9 +19,10 @@ cron.schedule('*/5 * * * *', async () => {
         logger('Hurray, new Yechen :',newLink);
         const yechen = await getYechen(newLink);
         logger("Title :", yechen.title);
-        if (yechen) {
+        if ('title' in yechen || 'text' in yechen) {
             logger("Send English Version");
-            return await bot.telegram.sendMessage(process.env.CHAT_ID, `${yechen.title}\n\n${yechen.text}`);
+            await bot.telegram.sendMessage(process.env.CHAT_ID, `${yechen.title}\n\n${yechen.text}`);
+            return
             // logger("Trying translate");
             // const text = await translate(yechen.text);
             // logger("Send translate result");
