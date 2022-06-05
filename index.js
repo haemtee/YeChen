@@ -17,6 +17,7 @@ cron.schedule('*/5 * * * *', async () => {
     const newLink = await checkNewYechen();
     if (newLink) {
         logger('Hurray, new Yechen :',newLink);
+        await bot.telegram.sendMessage(process.env.CHAT_ID, `new link = ${newLink}`);
         const yechen = await getYechen(newLink);
         logger("Title :", yechen.title);
         if ('title' in yechen || 'text' in yechen) {
